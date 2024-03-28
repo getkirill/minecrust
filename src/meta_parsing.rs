@@ -3,7 +3,7 @@ use std::{collections::HashMap, hash::Hash};
 use serde::Deserialize;
 use serde_json::Value;
 
-pub async fn download_meta_for_version(version: &str) -> Result<LauncherMeta, ()> {
+pub async fn download_meta_for_version(version: &str) -> Result<String, ()> {
     let meta: LauncherVersionManifestV2 =
         reqwest::get("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")
             .await
@@ -20,7 +20,7 @@ pub async fn download_meta_for_version(version: &str) -> Result<LauncherMeta, ()
     Ok(reqwest::get(version.url)
         .await
         .unwrap()
-        .json()
+        .text()
         .await
         .unwrap())
 }

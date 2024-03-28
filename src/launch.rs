@@ -56,6 +56,10 @@ pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
         ).replace(
             "--uuid ${auth_uuid}",
             "",
+        ).replace(
+            "${version_type}",
+            &launchArgs
+                    .versionType.as_ref().or(Some(&String::from("release"))).unwrap(),
         );
     let java_args = manifest
         .arguments
@@ -126,5 +130,6 @@ pub struct LaunchArgs {
     pub libraryPath: PathBuf,
     pub nativesPath: PathBuf,
     pub username: String,
-    pub accessToken: Option<String>
+    pub accessToken: Option<String>,
+    pub versionType: Option<String>
 }

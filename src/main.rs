@@ -47,12 +47,16 @@ async fn main() {
             .unwrap(),
     )
     .unwrap();
-    // download_assets(&version.assetIndex, path.join("./assets").as_path()).await;
-    // download_libraries(&version.libraries, path.join("./libs").as_path()).await;
-    fs::write(
-        path.join("./client.jar"),
-        download_minecraft_jar(&version, "client").await,
-    ).unwrap();
+    download_assets(&version.assetIndex, path.join("./assets").as_path()).await;
+    download_libraries(&version.libraries, path.join("./libs").as_path()).await;
+    if path.join("./client.jar").exists() {
+        println!("client.jar already there")
+    } else {   
+        fs::write(
+            path.join("./client.jar"),
+            download_minecraft_jar(&version, "client").await,
+        ).unwrap();
+    }
     // println!("{}", path.join("./libs")
     // .canonicalize()
     // .unwrap()
@@ -68,7 +72,8 @@ async fn main() {
             nativesPath: path.join("./native"),
             javaPath: String::from("/usr/lib/jvm/java-17-openjdk/bin/java"),
             username: String::from("test"),
-            accessToken: None
+            accessToken: None,
+            versionType: None
         },
     )
 }

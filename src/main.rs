@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use minecrust::{downloads::download_assets, meta_parsing};
+use minecrust::{downloads::{download_assets, download_libraries}, meta_parsing};
 
 #[tokio::main]
 async fn main() {
@@ -25,5 +25,6 @@ async fn main() {
             .collect::<Vec<String>>()
             .join(" ").as_str()
     );
-    download_assets(version.assetIndex, Path::new("./assets")).await;
+    // download_assets(version.assetIndex, Path::new("./assets")).await;
+    download_libraries(version.libraries, Path::new("./libs")).await;
 }

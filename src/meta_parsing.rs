@@ -31,28 +31,30 @@ pub struct LauncherMeta {
     pub assetIndex: LauncherMetaAssetIndex,
     downloads: HashMap<String, LauncherMetaDownload>,
     javaVersion: LauncherMetaJavaVersion,
-    libraries: Vec<Library>,
+    pub libraries: Vec<Library>,
     mainClass: String
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Library {
-    name: String,
-    rules: Option<Vec<Rule>>,
+    pub downloads: LibraryDownloads,
+    pub name: String,
+    pub rules: Option<Vec<Rule>>,
 }
 
-// #[derive(Deserialize, Debug)]
-// pub struct LibraryDownloads {
-//     artifact: Option<LibraryDownloadArtifact>,
-//     classifiers: Option<HashMap<String, LibraryDownloadArtifact>>,
-//     natives: Option<HashMap<String, String>>
-// }
+#[derive(Deserialize, Debug)]
+pub struct LibraryDownloads {
+    pub artifact: Option<LibraryDownloadArtifact>,
+    classifiers: Option<HashMap<String, LibraryDownloadArtifact>>,
+    natives: Option<HashMap<String, String>>
+}
 
 #[derive(Deserialize, Debug)]
 pub struct LibraryDownloadArtifact {
-    path: String,
-    size: i32,
-    url: String
+    pub path: String,
+    pub size: i32,
+    pub url: String,
+    pub sha1: String
 }
 
 #[derive(Deserialize, Debug)]
@@ -107,9 +109,9 @@ pub enum RuleValue {
 
 #[derive(Deserialize, Debug)]
 pub struct Rule {
-    action: RuleAction,
-    features: Option<HashMap<String, bool>>,
-    os: Option<RuleOSMatching>
+    pub action: RuleAction,
+    pub features: Option<HashMap<String, bool>>,
+    pub os: Option<RuleOSMatching>
 }
 
 #[derive(Deserialize, Debug)]

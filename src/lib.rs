@@ -1,4 +1,5 @@
 pub mod meta_parsing;
+pub mod downloads;
 
 // pub fn add(left: usize, right: usize) -> usize {
 //     left + right

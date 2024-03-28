@@ -14,3 +14,4 @@ reqwest = {version = "0.12.2", features = ["json"]}
 bytes = "1.6.0"
 sha1 = "0.10.6"
 hex = "0.4.3"
+shell-words = "1.1.0"

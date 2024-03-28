@@ -7,10 +7,11 @@ use serde_json::Value;
 pub struct LauncherMeta {
     pub arguments: Arguments,
     pub assetIndex: LauncherMetaAssetIndex,
-    downloads: HashMap<String, LauncherMetaDownload>,
-    javaVersion: LauncherMetaJavaVersion,
+    pub assets: String,
+    pub downloads: HashMap<String, LauncherMetaDownload>,
+    pub javaVersion: LauncherMetaJavaVersion,
     pub libraries: Vec<Library>,
-    mainClass: String
+    pub mainClass: String
 }
 
 #[derive(Deserialize, Debug)]
@@ -43,7 +44,8 @@ pub struct LauncherMetaJavaVersion {
 #[derive(Deserialize, Debug)]
 pub struct LauncherMetaAssetIndex {
     totalSize: i32,
-    pub url: String
+    pub url: String,
+    pub id: String
 }
 
 // not gonna bother rn
@@ -55,14 +57,15 @@ pub struct LauncherMetaAssetIndex {
 
 #[derive(Deserialize, Debug)]
 pub struct LauncherMetaDownload {
-    size: i32,
-    url: String
+    pub size: i32,
+    pub url: String,
+    pub sha1: String
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Arguments {
     pub game: Vec<Argument>,
-    jvm: Vec<Argument>
+    pub jvm: Vec<Argument>
 }
 
 #[derive(Deserialize, Debug)]

@@ -4,7 +4,7 @@ use bytes::Bytes;
 use serde::Deserialize;
 use sha1::{Digest, Sha1};
 
-use crate::meta_parsing::{LauncherMetaAssetIndex, Library, LibraryDownloadArtifact};
+use crate::meta_parsing::{Asset, AssetListing, LauncherMetaAssetIndex, LauncherVersionManifestV2, Library, LibraryDownloadArtifact};
 
 pub async fn download_assets(assets: LauncherMetaAssetIndex, dir: &Path) {
     let listing: AssetListing = reqwest::get(assets.url)
@@ -53,17 +53,6 @@ pub async fn download_asset(asset: Asset) -> Bytes {
     .unwrap();
 }
 
-#[derive(Deserialize, Debug)]
-pub struct AssetListing {
-    objects: HashMap<String, Asset>,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct Asset {
-    hash: String,
-    size: i32,
-}
-
 pub async fn download_libraries(libraries: Vec<Library>, dir: &Path) {
     for libary in libraries {
         // libary.downloads
@@ -94,4 +83,26 @@ pub async fn download_library_artifact(artifact: LibraryDownloadArtifact) -> Byt
         .bytes()
         .await
         .unwrap();
+}
+
+pub async fn download_meta_for_version(version: &str) -> Result<String, ()> {
+    let meta: LauncherVersionManifestV2 =
+        reqwest::get("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")
+            .await
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+    let version = meta
+        .versions
+        .into_iter()
+        .filter(|it| it.id.as_str() == version)
+        .nth(0)
+        .unwrap();
+    Ok(reqwest::get(version.url)
+        .await
+        .unwrap()
+        .text()
+        .await
+        .unwrap())
 }

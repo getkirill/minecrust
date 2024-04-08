@@ -125,17 +125,17 @@ pub enum OperatingSystem {
 
 #[derive(Deserialize, Debug)]
 pub struct LauncherVersionManifestV2 {
-    pub latest: LauncherVersionManifestV2_LatestVersions,
-    pub versions: Vec<LauncherVersionManifestV2_Version>,
+    pub latest: LauncherVersionManifestV2LatestVersions,
+    pub versions: Vec<LauncherVersionManifestV2Version>,
 }
 #[derive(Deserialize, Debug)]
-pub struct LauncherVersionManifestV2_LatestVersions {
+pub struct LauncherVersionManifestV2LatestVersions {
     pub release: String,
     pub snapshot: String,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct LauncherVersionManifestV2_Version {
+pub struct LauncherVersionManifestV2Version {
     pub id: String,
     // #[serde(rename = "type")]
     // version_type: LauncherVersionManifestV2_VersionType,

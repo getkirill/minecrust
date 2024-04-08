@@ -1,11 +1,11 @@
-use std::{borrow::Borrow, fs, path::Path};
+use std::{fs, path::Path};
 
 use minecrust::{
     downloads::{
         download_assets, download_libraries, download_meta_for_version, download_minecraft_jar,
     },
     launch::{launch_minecraft, LaunchArgs},
-    meta_parsing::{self, Asset, LauncherMeta, LauncherVersionManifestV2}, ProgressCallback,
+    meta_parsing::{Asset, LauncherMeta}, ProgressCallback,
 };
 
 #[tokio::main]
@@ -68,15 +68,15 @@ async fn main() {
     launch_minecraft(
         &version,
         &LaunchArgs {
-            jarPath: path.join("./client.jar"),
-            assetsDir: path.join("./assets"),
-            gameDir: path.join("./.minecraft"),
-            libraryPath: path.join("./libs"),
-            nativesPath: path.join("./native"),
-            javaPath: String::from("/usr/lib/jvm/java-17-openjdk/bin/java"),
+            jar_path: path.join("./client.jar"),
+            assets_dir: path.join("./assets"),
+            game_dir: path.join("./.minecraft"),
+            library_dir: path.join("./libs"),
+            natives_dir: path.join("./native"),
+            java_path: String::from("/usr/lib/jvm/java-17-openjdk/bin/java"),
             username: String::from("test"),
-            accessToken: None,
-            versionType: None
+            access_token: None,
+            version_type: None
         },
     )
 }

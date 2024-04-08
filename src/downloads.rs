@@ -1,7 +1,6 @@
-use std::{collections::HashMap, fs, path::Path};
+use std::{fs, path::Path};
 
 use bytes::Bytes;
-use serde::Deserialize;
 use sha1::{Digest, Sha1};
 
 use crate::{
@@ -149,14 +148,19 @@ pub async fn download_library_artifact(artifact: &LibraryDownloadArtifact) -> By
         .unwrap();
 }
 
-pub async fn download_meta_for_version(version: &str) -> Result<String, ()> {
-    let meta: LauncherVersionManifestV2 =
+pub async fn download_version_manifest() -> Result<LauncherVersionManifestV2, ()> {
+    Ok(
         reqwest::get("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")
             .await
             .unwrap()
             .json()
             .await
-            .unwrap();
+            .unwrap(),
+    )
+}
+
+pub async fn download_meta_for_version(version: &str) -> Result<String, ()> {
+    let meta: LauncherVersionManifestV2 = download_version_manifest().await.unwrap();
     let version = meta
         .versions
         .into_iter()
@@ -171,8 +175,8 @@ pub async fn download_meta_for_version(version: &str) -> Result<String, ()> {
         .unwrap())
 }
 
-pub async fn download_minecraft_jar(manifest: &LauncherMeta, dlType: &str) -> Bytes {
-    reqwest::get(&manifest.downloads[dlType].url)
+pub async fn download_minecraft_jar(manifest: &LauncherMeta, dl_type: &str) -> Bytes {
+    reqwest::get(&manifest.downloads[dl_type].url)
         .await
         .unwrap()
         .bytes()

@@ -1,12 +1,11 @@
 use std::{
-    fmt::format,
-    path::{Path, PathBuf},
+    path::PathBuf,
     process::Command,
 };
 
 use crate::meta_parsing::{Argument, LauncherMeta};
 
-pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
+pub fn launch_minecraft(manifest: &LauncherMeta, launch_args: &LaunchArgs) {
     let minecraft_args = manifest
         .arguments
         .game
@@ -20,12 +19,12 @@ pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
         })
         .collect::<Vec<String>>()
         .join(" ")
-        .replace("${auth_player_name}", &launchArgs.username)
+        .replace("${auth_player_name}", &launch_args.username)
         .replace(
             "${game_directory}",
             format!(
                 "\"{}\"",
-                &launchArgs.gameDir.canonicalize().unwrap().to_str().unwrap()
+                &launch_args.game_dir.canonicalize().unwrap().to_str().unwrap()
             )
             .as_str(),
         )
@@ -33,8 +32,8 @@ pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
             "${assets_root}",
             format!(
                 "\"{}\"",
-                &launchArgs
-                    .assetsDir
+                &launch_args
+                    .assets_dir
                     .canonicalize()
                     .unwrap()
                     .to_str()
@@ -51,15 +50,15 @@ pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
             .as_str(),
         ).replace(
             "${auth_access_token}",
-            &launchArgs
-                    .accessToken.as_ref().or(Some(&String::from("offline"))).unwrap(),
+            &launch_args
+                    .access_token.as_ref().or(Some(&String::from("offline"))).unwrap(),
         ).replace(
             "--uuid ${auth_uuid}",
             "",
         ).replace(
             "${version_type}",
-            &launchArgs
-                    .versionType.as_ref().or(Some(&String::from("release"))).unwrap(),
+            &launch_args
+                    .version_type.as_ref().or(Some(&String::from("release"))).unwrap(),
         );
     let java_args = manifest
         .arguments
@@ -78,8 +77,8 @@ pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
             "${natives_directory}",
             format!(
                 "\"{}\"",
-                &launchArgs
-                    .nativesPath
+                &launch_args
+                    .natives_dir
                     .canonicalize()
                     .unwrap()
                     .to_str()
@@ -95,8 +94,8 @@ pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
                     .libraries
                     .iter()
                     .map(|it| {
-                        launchArgs
-                            .libraryPath
+                        launch_args
+                            .library_dir
                             .canonicalize()
                             .unwrap()
                             .join(&it.downloads.artifact.as_ref().unwrap().path).to_str().unwrap().to_string()
@@ -104,7 +103,7 @@ pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
                     .collect::<Vec<String>>()
                     .join(":")
                     + ":"
-                    + &launchArgs.jarPath.canonicalize().unwrap().to_str().unwrap())
+                    + &launch_args.jar_path.canonicalize().unwrap().to_str().unwrap())
                     .as_str()
             )
             .as_str(),
@@ -116,20 +115,20 @@ pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
         &java_args, &manifest.main_class, &minecraft_args
     );
     println!("{}", &command);
-    let mut cmd = Command::new(&launchArgs.javaPath);
+    let mut cmd = Command::new(&launch_args.java_path);
     cmd.args(shell_words::split(&command).unwrap());
-    cmd.current_dir(&launchArgs.gameDir);
+    cmd.current_dir(&launch_args.game_dir);
     cmd.spawn().unwrap().wait().unwrap();
 }
 
 pub struct LaunchArgs {
-    pub javaPath: String,
-    pub jarPath: PathBuf,
-    pub assetsDir: PathBuf,
-    pub gameDir: PathBuf,
-    pub libraryPath: PathBuf,
-    pub nativesPath: PathBuf,
+    pub java_path: String,
+    pub jar_path: PathBuf,
+    pub assets_dir: PathBuf,
+    pub game_dir: PathBuf,
+    pub library_dir: PathBuf,
+    pub natives_dir: PathBuf,
     pub username: String,
-    pub accessToken: Option<String>,
-    pub versionType: Option<String>
+    pub access_token: Option<String>,
+    pub version_type: Option<String>
 }

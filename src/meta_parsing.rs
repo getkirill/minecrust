@@ -1,17 +1,19 @@
-use std::{collections::HashMap, hash::Hash};
+use std::collections::HashMap;
 
 use serde::Deserialize;
-use serde_json::Value;
 
 #[derive(Deserialize, Debug)]
 pub struct LauncherMeta {
     pub arguments: Arguments,
-    pub assetIndex: LauncherMetaAssetIndex,
+    #[serde(rename = "assetIndex")]
+    pub asset_index: LauncherMetaAssetIndex,
     pub assets: String,
     pub downloads: HashMap<String, LauncherMetaDownload>,
-    pub javaVersion: LauncherMetaJavaVersion,
+    #[serde(rename = "javaVersion")]
+    pub java_version: LauncherMetaJavaVersion,
     pub libraries: Vec<Library>,
-    pub mainClass: String
+    #[serde(rename = "mainClass")]
+    pub main_class: String
 }
 
 #[derive(Deserialize, Debug)]
@@ -24,8 +26,8 @@ pub struct Library {
 #[derive(Deserialize, Debug)]
 pub struct LibraryDownloads {
     pub artifact: Option<LibraryDownloadArtifact>,
-    classifiers: Option<HashMap<String, LibraryDownloadArtifact>>,
-    natives: Option<HashMap<String, String>>
+    pub classifiers: Option<HashMap<String, LibraryDownloadArtifact>>,
+    pub natives: Option<HashMap<String, String>>
 }
 
 #[derive(Deserialize, Debug)]
@@ -38,12 +40,14 @@ pub struct LibraryDownloadArtifact {
 
 #[derive(Deserialize, Debug)]
 pub struct LauncherMetaJavaVersion {
-    majorVersion: i16,
+    #[serde(rename = "majorVersion")]
+    pub major_version: i16,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct LauncherMetaAssetIndex {
-    totalSize: i32,
+    #[serde(rename = "totalSize")]
+    pub total_size: i32,
     pub url: String,
     pub id: String
 }
@@ -105,9 +109,9 @@ pub enum RuleAction {
 
 #[derive(Deserialize, Debug)]
 pub struct RuleOSMatching {
-    name: Option<OperatingSystem>,
-    version: Option<String>,
-    arch: Option<String>
+    pub name: Option<OperatingSystem>,
+    pub version: Option<String>,
+    pub arch: Option<String>
 }
 #[derive(Deserialize, Debug)]
 pub enum OperatingSystem {
@@ -126,8 +130,8 @@ pub struct LauncherVersionManifestV2 {
 }
 #[derive(Deserialize, Debug)]
 pub struct LauncherVersionManifestV2_LatestVersions {
-    release: String,
-    snapshot: String,
+    pub release: String,
+    pub snapshot: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -153,7 +157,7 @@ pub struct AssetListing {
     pub objects: HashMap<String, Asset>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Asset {
     pub hash: String,
     pub size: i32,

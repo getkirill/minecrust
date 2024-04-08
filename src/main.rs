@@ -5,7 +5,7 @@ use minecrust::{
         download_assets, download_libraries, download_meta_for_version, download_minecraft_jar,
     },
     launch::{launch_minecraft, LaunchArgs},
-    meta_parsing::{self, LauncherMeta, LauncherVersionManifestV2},
+    meta_parsing::{self, Asset, LauncherMeta, LauncherVersionManifestV2}, ProgressCallback,
 };
 
 #[tokio::main]
@@ -39,7 +39,7 @@ async fn main() {
     fs::create_dir_all(path.join("./native")).unwrap();
     fs::write(
         path.join("./assets/index.json"),
-        reqwest::get(&version.assetIndex.url)
+        reqwest::get(&version.asset_index.url)
             .await
             .unwrap()
             .bytes()
@@ -47,7 +47,10 @@ async fn main() {
             .unwrap(),
     )
     .unwrap();
-    download_assets(&version.assetIndex, path.join("./assets").as_path()).await;
+    fn asset_callback(progress:usize, total:usize, obj: (String, Asset)) {
+        println!("{} ({}/{}) {}", progress as f64 / total as f64, progress, total, obj.0)
+    }
+    download_assets(&version.asset_index, path.join("./assets").as_path(), Some(&(asset_callback as ProgressCallback<usize, (String, Asset)>))).await;
     download_libraries(&version.libraries, path.join("./libs").as_path()).await;
     if path.join("./client.jar").exists() {
         println!("client.jar already there")

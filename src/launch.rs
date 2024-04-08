@@ -113,7 +113,7 @@ pub fn launch_minecraft(manifest: &LauncherMeta, launchArgs: &LaunchArgs) {
     // println!("{}", java_args);
     let command = format!(
         "{} {} {}",
-        &java_args, &manifest.mainClass, &minecraft_args
+        &java_args, &manifest.main_class, &minecraft_args
     );
     println!("{}", &command);
     let mut cmd = Command::new(&launchArgs.javaPath);

@@ -2,6 +2,8 @@ pub mod meta_parsing;
 pub mod downloads;
 pub mod launch;
 
+pub type ProgressCallback<I, T> = fn(I, I, T);
+
 // pub fn add(left: usize, right: usize) -> usize {
 //     left + right
 // }

@@ -12,7 +12,7 @@ use crate::{
 };
 
 /**
- * Downloads all assets and index into appropriate foldre
+ * Downloads all assets and index into appropriate folder
  */
 pub async fn download_assets(
     assets: &LauncherMetaAssetIndex,
@@ -60,14 +60,20 @@ pub async fn download_assets(
     }
 }
 
-pub async fn verify_assets(assets: &LauncherMetaAssetIndex, dir: &Path) -> Result<(), ()> {
+pub async fn verify_assets(
+    assets: &LauncherMetaAssetIndex,
+    dir: &Path,
+    progress: Option<&ProgressCallback<usize, (String, Asset)>>,
+) -> Result<(), ()> {
     let listing: AssetListing = reqwest::get(&assets.url)
         .await
         .unwrap()
         .json()
         .await
         .unwrap();
-    for (_, asset) in listing.objects {
+    let mut asset_counter = 0;
+    let asset_total = listing.objects.keys().len();
+    for (path, asset) in listing.objects {
         // let asset_path_str = format!("{}/{}", &asset.hash[..2], asset.hash);
         let asset_path = dir.join(format!("objects/{}/{}", &asset.hash[..2], asset.hash));
         if asset_path.exists() {
@@ -81,6 +87,14 @@ pub async fn verify_assets(assets: &LauncherMetaAssetIndex, dir: &Path) -> Resul
             //     asset.hash == hex::encode(hash)
             // );
             if asset.hash == hex::encode(hash) {
+                asset_counter += 1;
+                if let Some(c) = progress {
+                    c(
+                        asset_counter.clone(),
+                        asset_total.clone(),
+                        (path.clone(), asset.into()),
+                    );
+                }
                 continue;
             } else {
                 return Err(());
@@ -103,32 +117,56 @@ pub async fn download_asset(asset: &Asset) -> Bytes {
     .unwrap();
 }
 
-pub async fn download_libraries(libraries: &Vec<Library>, dir: &Path) {
-    for libary in libraries {
+pub async fn download_libraries(
+    libraries: &Vec<Library>,
+    dir: &Path,
+    progress: Option<&ProgressCallback<usize, Library>>,
+) {
+    let mut lib_counter = 0;
+    let lib_total = libraries.len();
+    for library in libraries {
         // libary.downloads
-        if let Some(artifact) = &libary.downloads.artifact {
+        if let Some(artifact) = &library.downloads.artifact {
             let path = dir.join(&artifact.path);
             fs::create_dir_all(path.parent().unwrap()).unwrap();
             if path.exists() {
-                println!("Artifact {} already exists!", &artifact.path);
+                // println!("Artifact {} already exists!", &artifact.path);
+                lib_counter += 1;
+                if let Some(c) = progress {
+                    c(lib_counter.clone(), lib_total.clone(), library.clone());
+                }
                 continue;
             }
-            println!("Downloading library artifact {}", artifact.path);
+            // println!("Downloading library artifact {}", artifact.path);
             fs::write(path, download_library_artifact(&artifact).await).unwrap();
+            lib_counter += 1;
+            if let Some(c) = progress {
+                c(lib_counter.clone(), lib_total.clone(), library.clone());
+            }
         }
     }
 }
 
-pub async fn verify_libraries(libraries: &Vec<Library>, dir: &Path) -> Result<(), ()> {
-    for libary in libraries {
+pub async fn verify_libraries(
+    libraries: &Vec<Library>,
+    dir: &Path,
+    progress: Option<&ProgressCallback<usize, Library>>,
+) -> Result<(), ()> {
+    let mut lib_counter = 0;
+    let lib_total = libraries.len();
+    for library in libraries {
         // libary.downloads
-        if let Some(artifact) = &libary.downloads.artifact {
+        if let Some(artifact) = &library.downloads.artifact {
             let path = dir.join(&artifact.path);
             if path.exists() {
                 let mut hasher = Sha1::new();
                 hasher.update(fs::read(&path).unwrap());
                 let hash = hasher.finalize();
                 if artifact.sha1 == hex::encode(hash) {
+                    lib_counter += 1;
+                    if let Some(c) = progress {
+                        c(lib_counter.clone(), lib_total.clone(), library.clone());
+                    }
                     continue;
                 } else {
                     return Err(());

@@ -16,21 +16,21 @@ pub struct LauncherMeta {
     pub main_class: String
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Library {
     pub downloads: LibraryDownloads,
     pub name: String,
     pub rules: Option<Vec<Rule>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct LibraryDownloads {
     pub artifact: Option<LibraryDownloadArtifact>,
     pub classifiers: Option<HashMap<String, LibraryDownloadArtifact>>,
     pub natives: Option<HashMap<String, String>>
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct LibraryDownloadArtifact {
     pub path: String,
     pub size: i32,
@@ -92,14 +92,14 @@ pub enum RuleValue {
     Multiple(Vec<String>)
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Rule {
     pub action: RuleAction,
     pub features: Option<HashMap<String, bool>>,
     pub os: Option<RuleOSMatching>
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub enum RuleAction {
     #[serde(rename = "allow")]
     Allow,
@@ -107,13 +107,13 @@ pub enum RuleAction {
     Disallow,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct RuleOSMatching {
     pub name: Option<OperatingSystem>,
     pub version: Option<String>,
     pub arch: Option<String>
 }
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub enum OperatingSystem {
     #[serde(rename = "windows")]
     Windows,

@@ -5,7 +5,7 @@ use minecrust::{
         download_assets, download_libraries, download_meta_for_version, download_minecraft_jar,
     },
     launch::{launch_minecraft, LaunchArgs},
-    meta_parsing::{Asset, LauncherMeta}, ProgressCallback,
+    meta_parsing::{Asset, LauncherMeta, Library}, ProgressCallback,
 };
 
 #[tokio::main]
@@ -48,10 +48,13 @@ async fn main() {
     )
     .unwrap();
     fn asset_callback(progress:usize, total:usize, obj: (String, Asset)) {
-        println!("{} ({}/{}) {}", progress as f64 / total as f64, progress, total, obj.0)
+        println!("{:6.2}% ({}/{}) Downloading asset {}", (progress as f64 / total as f64) * 100.0, progress, total, obj.0)
     }
     download_assets(&version.asset_index, path.join("./assets").as_path(), Some(&(asset_callback as ProgressCallback<usize, (String, Asset)>))).await;
-    download_libraries(&version.libraries, path.join("./libs").as_path()).await;
+    fn library_callback(progress:usize, total:usize, obj: Library) {
+        println!("{:6.2}% ({}/{}) Downloading library {}", (progress as f64 / total as f64) * 100.0, progress, total, obj.downloads.artifact.unwrap().path)
+    }
+    download_libraries(&version.libraries, path.join("./libs").as_path(), Some(&(library_callback as ProgressCallback<usize, Library>))).await;
     if path.join("./client.jar").exists() {
         println!("client.jar already there")
     } else {   
